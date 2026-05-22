@@ -17,7 +17,7 @@ export default function MyDatasetPage() {
       return;
     }
     axios
-      .get(`http://localhost:5000/dataset/getbyuser/${userId}`, {
+      .get(`${process.env.NEXT_PUBLIC_API_URL}/dataset/getbyuser/${userId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {

@@ -33,8 +33,8 @@ export default function BrowseDatasetsPage() {
             setIsLoading(true);
             try {
                 const url = selectedCategory === 'All'
-                    ? 'http://localhost:5000/dataset/getall'
-                    : `http://localhost:5000/dataset/getbycategory/${selectedCategory}`;
+                    ? `${process.env.NEXT_PUBLIC_API_URL}/dataset/getall`
+                    : `${process.env.NEXT_PUBLIC_API_URL}/dataset/getbycategory/${selectedCategory}`;
                 const response = await axios.get(url);
                 setDatasets(response.data);
             } catch (err) {

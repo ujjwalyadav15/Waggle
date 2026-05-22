@@ -5,7 +5,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 
 // Base URL for your backend API
-const API_URL = 'http://localhost:5000/user';
+const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/user`;
 
 // --- SVG Icons ---
 const EditIcon = () => (

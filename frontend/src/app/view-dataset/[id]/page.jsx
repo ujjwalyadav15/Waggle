@@ -143,7 +143,7 @@ const AuthModal = ({ datasetName, onClose }) => {
 const ViewDataset = () => {
     const { id } = useParams();
     const router = useRouter();
-    const { loggedIn } = UseAppContext();
+    const { loggedIn, authLoading } = UseAppContext();
 
     const [dataset, setDataset] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -154,7 +154,7 @@ const ViewDataset = () => {
         if (id) {
             const fetchDataset = async () => {
                 try {
-                    const response = await axios.get(`http://localhost:5000/dataset/getbyid/${id}`);
+                    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/dataset/getbyid/${id}`);
                     setDataset(response.data);
                 } catch (err) {
                     console.error("Failed to fetch dataset:", err);
@@ -300,8 +300,8 @@ const ViewDataset = () => {
                             <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
                                 <h3 className="text-base font-bold text-gray-900 mb-1">Download Dataset</h3>
 
-                                {/* Login hint for guests */}
-                                {!loggedIn && (
+                                {/* Login hint for guests — only shown after auth is hydrated */}
+                                {!authLoading && !loggedIn && (
                                     <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2.5 mb-4 mt-2">
                                         <LockIcon className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
                                         <p className="text-xs text-amber-700 leading-snug">
@@ -310,17 +310,9 @@ const ViewDataset = () => {
                                     </div>
                                 )}
 
-                                {!loggedIn && (
-                                    <p className="text-xs text-gray-400 mb-5">
-                                        You will be redirected to the official source page to download this dataset.
-                                    </p>
-                                )}
-
-                                {loggedIn && (
-                                    <p className="text-xs text-gray-400 mb-5">
-                                        You will be redirected to the official source page to download this dataset.
-                                    </p>
-                                )}
+                                <p className="text-xs text-gray-400 mb-5">
+                                    You will be redirected to the official source page to download this dataset.
+                                </p>
 
                                 {dataset.downloadUrl ? (
                                     <>
@@ -340,8 +332,8 @@ const ViewDataset = () => {
                                                 </>
                                             ) : (
                                                 <>
-                                                    {loggedIn ? <DownloadIcon className="w-5 h-5" /> : <LockIcon className="w-5 h-5" />}
-                                                    {loggedIn ? 'Download Dataset' : 'Sign In to Download'}
+                                                    {(!authLoading && !loggedIn) ? <LockIcon className="w-5 h-5" /> : <DownloadIcon className="w-5 h-5" />}
+                                                    {(!authLoading && !loggedIn) ? 'Sign In to Download' : 'Download Dataset'}
                                                 </>
                                             )}
                                         </button>

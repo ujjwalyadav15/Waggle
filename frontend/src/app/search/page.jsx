@@ -32,7 +32,7 @@ const SearchPage = () => {
         setIsLoading(true);
         setHasSearched(true);
         try {
-            const response = await axios.get(`http://localhost:5000/dataset/search/${searchTerm}`);
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/dataset/search/${searchTerm}`);
             setResults(response.data);
         } catch (err) {
             console.error("Search failed:", err);

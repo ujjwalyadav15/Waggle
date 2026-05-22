@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from "jwt-decode";
 import Link from 'next/link';
+import UseAppContext from '@/context/AppContext';
 
 // Inlined SVG components for icons
 const IconEye = (props) => (
@@ -35,6 +36,7 @@ const LoginSchema = Yup.object().shape({
 const LoginPage = () => {
   const router = useRouter();
   const [passwordHidden, setPasswordHidden] = useState(true);
+  const { setLoggedIn } = UseAppContext();
 
   const loginForm = useFormik({
     initialValues: {
@@ -44,7 +46,7 @@ const LoginPage = () => {
     validationSchema: LoginSchema,
     onSubmit: async (values, { setSubmitting }) => {
       try {
-        const response = await axios.post('http://localhost:5000/user/authenticate', values);
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/user/authenticate`, values);
         toast.success('Login successful! Welcome back.');
         console.log(response.data);
 
@@ -52,6 +54,7 @@ const LoginPage = () => {
         localStorage.setItem('userId', response.data.payload._id);
         // You can also store user data if your backend sends it
         localStorage.setItem('user', JSON.stringify(response.data.payload))
+        setLoggedIn(true);
         router.push('/'); // Redirect to dashboard after login
 
       } catch (error) {
@@ -66,11 +69,12 @@ const LoginPage = () => {
   const handleGoogleSuccess = (credentialResponse) => {
     const decoded = jwtDecode(credentialResponse.credential);
 
-    axios.post('http://localhost:5000/user/google-signin', decoded)
+    axios.post(`${process.env.NEXT_PUBLIC_API_URL}/user/google-signin`, decoded)
       .then((response) => {
         toast.success('Google Sign-In Successful!');
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('userId', response.data.payload._id);
+        setLoggedIn(true);
         router.push('/');
       })
       .catch((err) => {

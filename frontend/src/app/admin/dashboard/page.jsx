@@ -13,8 +13,8 @@ const AdminDashboardPage = () => {
             try {
                 // Fetch all datasets and all users in parallel
                 const [datasetsResponse, usersResponse] = await Promise.all([
-                    axios.get('http://localhost:5000/dataset/getall'),
-                    axios.get('http://localhost:5000/user/getall')
+                    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/dataset/getall`),
+                    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/user/getall`)
                 ]);
                 setDatasets(datasetsResponse.data);
                 setTotalUsers(usersResponse.data.length);

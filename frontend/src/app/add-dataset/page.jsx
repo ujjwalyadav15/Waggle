@@ -46,27 +46,22 @@ const ModalPreview = ({ name, description, coverImage, category }) => (
 
 const AddDatasetPage = () => {
     const router = useRouter();
-    const { loggedIn } = UseAppContext();
+    const { loggedIn, authLoading } = UseAppContext();
     const [isUploading, setIsUploading] = useState(false);
     const [showPreviewModal, setShowPreviewModal] = useState(false);
-    const [authChecked, setAuthChecked] = useState(false);
 
-    // Auth guard — redirect guests to login
+    // Auth guard — wait for AppContext to finish reading localStorage,
+    // then redirect guests. This avoids the race condition where loggedIn
+    // is briefly false even for authenticated users.
     useEffect(() => {
-        // Wait one tick for AppContext to hydrate from localStorage
-        const timer = setTimeout(() => {
-            if (!loggedIn) {
-                toast.error('You must be signed in to create a dataset.');
-                router.replace('/login');
-            } else {
-                setAuthChecked(true);
-            }
-        }, 100);
-        return () => clearTimeout(timer);
-    }, [loggedIn, router]);
+        if (!authLoading && !loggedIn) {
+            toast.error('You must be signed in to create a dataset.');
+            router.replace('/login');
+        }
+    }, [authLoading, loggedIn, router]);
 
-    // Show spinner while auth state is being determined
-    if (!authChecked) {
+    // Show spinner while auth state is still being read from localStorage
+    if (authLoading) {
         return (
             <div className="bg-gray-50 min-h-screen flex flex-col items-center justify-center gap-4">
                 <div className="relative w-12 h-12">
@@ -77,6 +72,9 @@ const AddDatasetPage = () => {
             </div>
         );
     }
+
+    // If not logged in, render nothing (redirect is already triggered above)
+    if (!loggedIn) return null;
 
     const datasetForm = useFormik({
         initialValues: { name: '', description: '', cover: '', category: '', downloadUrl: '' },
@@ -89,7 +87,7 @@ const AddDatasetPage = () => {
                 return;
             }
             try {
-                await axios.post('http://localhost:5000/dataset/add', values, {
+                await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/dataset/add`, values, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 toast.success('Dataset created successfully!');

@@ -16,7 +16,7 @@ export default function ProfilePage() {
       return;
     }
     axios
-      .get(`http://localhost:5000/user/profile/${userId}`, {
+      .get(`${process.env.NEXT_PUBLIC_API_URL}/user/profile/${userId}`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       .then((res) => {

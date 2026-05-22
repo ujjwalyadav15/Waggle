@@ -32,14 +32,8 @@ const ProfileIcon = (props) => (
 
 const Navbar = () => {
 
-    const { loggedIn, setLoggedIn, logout } = UseAppContext();
+    const { loggedIn, logout } = UseAppContext();
     const router = useRouter();
-
-    useEffect(() => {
-        // Check if a token exists in localStorage to determine login state
-        const token = localStorage.getItem('authToken');
-        if (setLoggedIn) setLoggedIn(!!token);
-    }, [setLoggedIn]);
 
     const handleLogout = () => {
         if (logout) logout();
