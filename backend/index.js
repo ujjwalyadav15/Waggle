@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 5000;
 
 // Use CORS with specific origin for security
 app.use(cors({
-  origin: ['http://localhost:3000']
+  origin: ['http://localhost:3000', 'https://waggle-one.vercel.app']
 }));
 
 // Middlewares
